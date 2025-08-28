@@ -1,120 +1,58 @@
 // src/PaymentForm.jsx
-import { useState, useEffect } from "react"
-import { supabase } from "./supabaseClient"
+import { useState } from "react"
 
 function PaymentForm() {
-  const [students, setStudents] = useState([])
-  const [studentId, setStudentId] = useState("")
-  const [amount, setAmount] = useState("")
-  const [paymentMethod, setPaymentMethod] = useState("cash")
-  const [referenceNo, setReferenceNo] = useState("")
-  const [message, setMessage] = useState("")
+  const [formData, setFormData] = useState({
+    student: "",
+    amount: "",
+    date: "",
+  })
 
-  useEffect(() => {
-    // fetch students for dropdown
-    const fetchStudents = async () => {
-      const { data, error } = await supabase.from("students").select("id, full_name, admission_no")
-      if (error) {
-        console.error("Error loading students:", error.message)
-      } else {
-        setStudents(data)
-      }
-    }
-    fetchStudents()
-  }, [])
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value })
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault()
-    setMessage("")
-
-    if (!studentId || !amount) {
-      setMessage("⚠️ Please select a student and enter an amount")
-      return
-    }
-
-    const { error } = await supabase.from("payments").insert([
-      {
-        student_id: studentId,
-        amount: parseFloat(amount),
-        payment_method: paymentMethod,
-        reference_no: referenceNo || null,
-      },
-    ])
-
-    if (error) {
-      setMessage("❌ Error recording payment: " + error.message)
-    } else {
-      setMessage("✅ Payment recorded successfully!")
-      setAmount("")
-      setReferenceNo("")
-      setStudentId("")
-    }
+    alert(`Payment submitted for ${formData.student}`)
   }
 
   return (
-    <div className="p-6 max-w-lg mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Record Payment</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Student Dropdown */}
-        <div>
-          <label className="block mb-1">Student</label>
-          <select
-            value={studentId}
-            onChange={(e) => setStudentId(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="">-- Select Student --</option>
-            {students.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.full_name} ({s.admission_no})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Amount */}
-        <div>
-          <label className="block mb-1">Amount (KSh)</label>
-          <input
-            type="number"
-            step="0.01"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="w-full border rounded p-2"
-          />
-        </div>
-
-        {/* Payment Method */}
-        <div>
-          <label className="block mb-1">Payment Method</label>
-          <select
-            value={paymentMethod}
-            onChange={(e) => setPaymentMethod(e.target.value)}
-            className="w-full border rounded p-2"
-          >
-            <option value="cash">Cash</option>
-            <option value="mpesa">M-Pesa</option>
-            <option value="bank">Bank</option>
-          </select>
-        </div>
-
-        {/* Reference No */}
-        <div>
-          <label className="block mb-1">Reference No (optional)</label>
-          <input
-            type="text"
-            value={referenceNo}
-            onChange={(e) => setReferenceNo(e.target.value)}
-            className="w-full border rounded p-2"
-          />
-        </div>
-
-        <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">
-          Save Payment
+    <div className="max-w-md mx-auto bg-white shadow-md rounded-xl p-6">
+      <h2 className="text-xl font-semibold text-gray-700 mb-4">Record Payment</h2>
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="student"
+          placeholder="Student Name"
+          value={formData.student}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+        <input
+          type="number"
+          name="amount"
+          placeholder="Amount"
+          value={formData.amount}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          Submit Payment
         </button>
       </form>
-
-      {message && <p className="mt-4">{message}</p>}
     </div>
   )
 }

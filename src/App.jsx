@@ -8,26 +8,35 @@ import Dashboard from "./Dashboard"
 function App() {
   const [page, setPage] = useState("dashboard")
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navbar */}
-      <nav className="bg-blue-600 text-white p-4 flex gap-4">
-        <button onClick={() => setPage("dashboard")} className="hover:underline">
-          Dashboard
-        </button>
-        <button onClick={() => setPage("students")} className="hover:underline">
-          Students
-        </button>
-        <button onClick={() => setPage("payments")} className="hover:underline">
-          Payments
-        </button>
-        <button onClick={() => setPage("expenses")} className="hover:underline">
-          Expenses
-        </button>
-      </nav>
+  const navItems = [
+    { name: "Dashboard", key: "dashboard" },
+    { name: "Students", key: "students" },
+    { name: "Payments", key: "payments" },
+    { name: "Expenses", key: "expenses" },
+  ]
 
-      {/* Page Content */}
-      <main className="p-6">
+  return (
+    <div className="min-h-screen flex bg-gray-50 font-inter">
+      {/* Sidebar */}
+      <aside className="w-64 bg-white shadow-md">
+        <div className="p-6 text-2xl font-bold text-blue-600 border-b">School Accounting</div>
+        <nav className="mt-6 flex flex-col gap-2">
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setPage(item.key)}
+              className={`text-left px-6 py-3 rounded-lg transition-all hover:bg-blue-100 ${
+                page === item.key ? "bg-blue-200 font-semibold" : "font-medium"
+              }`}
+            >
+              {item.name}
+            </button>
+          ))}
+        </nav>
+      </aside>
+
+      {/* Main Content */}
+      <main className="flex-1 p-8">
         {page === "dashboard" && <Dashboard />}
         {page === "students" && <StudentList />}
         {page === "payments" && <PaymentForm />}

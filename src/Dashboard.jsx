@@ -1,51 +1,46 @@
-import { useEffect, useState } from "react"
-import { supabase } from "./supabaseClient"
+// src/Dashboard.jsx
+import { FaUserGraduate, FaMoneyBillWave, FaFileInvoiceDollar, FaCoins } from "react-icons/fa"
 
 function Dashboard() {
-  const [totalFees, setTotalFees] = useState(0)
-  const [totalExpenses, setTotalExpenses] = useState(0)
-  const [balance, setBalance] = useState(0)
-
-  useEffect(() => {
-    fetchData()
-  }, [])
-
-  const fetchData = async () => {
-    // Total Payments
-    const { data: payments } = await supabase
-      .from("payments")
-      .select("amount")
-
-    // Total Expenses
-    const { data: expenses } = await supabase
-      .from("expenses")
-      .select("amount")
-
-    // Balances
-    const { data: balances } = await supabase
-      .from("students_balance")
-      .select("balance")
-
-    if (payments) setTotalFees(payments.reduce((acc, p) => acc + Number(p.amount), 0))
-    if (expenses) setTotalExpenses(expenses.reduce((acc, e) => acc + Number(e.amount), 0))
-    if (balances) setBalance(balances.reduce((acc, b) => acc + Number(b.balance), 0))
-  }
+  // Example stats
+  const stats = [
+    { title: "Total Students", value: 120, icon: <FaUserGraduate className="text-blue-500 w-8 h-8" /> },
+    { title: "Total Payments", value: "$45,000", icon: <FaMoneyBillWave className="text-green-500 w-8 h-8" /> },
+    { title: "Total Expenses", value: "$12,000", icon: <FaCoins className="text-red-500 w-8 h-8" /> },
+    { title: "Pending Fees", value: "$3,500", icon: <FaFileInvoiceDollar className="text-yellow-500 w-8 h-8" /> },
+  ]
 
   return (
-    <div className="p-6 grid md:grid-cols-3 gap-6">
-      <div className="bg-blue-500 text-white p-6 rounded-xl shadow">
-        <h3 className="text-lg font-semibold">Total Fees Collected</h3>
-        <p className="text-2xl font-bold">Ksh {totalFees}</p>
+    <div className="space-y-8">
+      {/* Welcome / Header */}
+      <div className="text-2xl font-semibold text-gray-700">Welcome back, Admin!</div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat) => (
+          <div
+            key={stat.title}
+            className="bg-white shadow-md rounded-xl p-6 flex items-center gap-4 hover:shadow-xl transition-shadow"
+          >
+            <div className="p-4 bg-gray-100 rounded-full">{stat.icon}</div>
+            <div>
+              <div className="text-gray-500 text-sm">{stat.title}</div>
+              <div className="text-xl font-bold text-gray-800">{stat.value}</div>
+            </div>
+          </div>
+        ))}
       </div>
 
-      <div className="bg-red-500 text-white p-6 rounded-xl shadow">
-        <h3 className="text-lg font-semibold">Total Expenses</h3>
-        <p className="text-2xl font-bold">Ksh {totalExpenses}</p>
-      </div>
-
-      <div className="bg-green-500 text-white p-6 rounded-xl shadow">
-        <h3 className="text-lg font-semibold">Outstanding Balance</h3>
-        <p className="text-2xl font-bold">Ksh {balance}</p>
+      {/* Example Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-white shadow-md rounded-xl p-6">
+          <div className="text-gray-700 font-semibold mb-4">Payments Over Time</div>
+          <div className="h-48 flex items-center justify-center text-gray-400">[Chart Placeholder]</div>
+        </div>
+        <div className="bg-white shadow-md rounded-xl p-6">
+          <div className="text-gray-700 font-semibold mb-4">Student Attendance</div>
+          <div className="h-48 flex items-center justify-center text-gray-400">[Chart Placeholder]</div>
+        </div>
       </div>
     </div>
   )

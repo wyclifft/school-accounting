@@ -1,77 +1,60 @@
+// src/ExpenseForm.jsx
 import { useState } from "react"
-import { supabase } from "./supabaseClient"
 
-function ExpensesForm() {
-  const [item, setItem] = useState("")
-  const [amount, setAmount] = useState("")
-  const [category, setCategory] = useState("General")
-  const [message, setMessage] = useState("")
+function ExpenseForm() {
+  const [formData, setFormData] = useState({
+    description: "",
+    amount: "",
+    date: "",
+  })
 
-  const handleSubmit = async (e) => {
+  const handleChange = (e) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value })
+
+  const handleSubmit = (e) => {
     e.preventDefault()
-    if (!item || !amount) {
-      setMessage("Please enter all details")
-      return
-    }
-
-    const { error } = await supabase.from("expenses").insert([
-      {
-        item,
-        amount,
-        category,
-      },
-    ])
-
-    if (error) {
-      setMessage("Error: " + error.message)
-    } else {
-      setMessage("Expense recorded successfully ✅")
-      setItem("")
-      setAmount("")
-    }
+    alert(`Expense recorded: ${formData.description}`)
   }
 
   return (
-    <div className="p-6 border rounded-lg shadow">
-      <h2 className="text-xl font-bold mb-4">Record Expense</h2>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+    <div className="max-w-md mx-auto bg-white shadow-md rounded-xl p-6">
+      <h2 className="text-xl font-semibold text-gray-700 mb-4">Record Expense</h2>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Expense Item"
-          className="border p-2 rounded w-full"
-          value={item}
-          onChange={(e) => setItem(e.target.value)}
+          name="description"
+          placeholder="Expense Description"
+          value={formData.description}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          required
         />
-
         <input
           type="number"
+          name="amount"
           placeholder="Amount"
-          className="border p-2 rounded w-full"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={formData.amount}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          required
         />
-
-        <select
-          className="border p-2 rounded w-full"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+        <input
+          type="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+          className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-500"
+          required
+        />
+        <button
+          type="submit"
+          className="w-full bg-red-600 text-white py-2 rounded-lg hover:bg-red-700 transition-colors"
         >
-          <option>General</option>
-          <option>Maintenance</option>
-          <option>Salaries</option>
-          <option>Supplies</option>
-          <option>Utilities</option>
-        </select>
-
-        <button className="bg-red-600 text-white px-4 py-2 rounded">
-          Save Expense
+          Submit Expense
         </button>
       </form>
-
-      {message && <p className="mt-3 text-green-600">{message}</p>}
     </div>
   )
 }
 
-export default ExpensesForm
+export default ExpenseForm
